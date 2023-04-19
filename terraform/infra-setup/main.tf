@@ -84,7 +84,7 @@ resource "google_project_iam_custom_role" "iap_admin_role" {
 
 module "iap_bastion" {
   source  = "terraform-google-modules/bastion-host/google"
-  version = "5.1.1"
+  version = "5.2.0"
 
   disk_type      = "pd-ssd"
   network        = module.gcp_network.network_name
