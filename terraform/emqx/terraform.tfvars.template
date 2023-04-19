@@ -1,0 +1,5 @@
+project_id        = "${PROJECT_ID}"
+region            = "${REGION}"
+emqx_domain       = "${DOMAIN}"
+iap_support_email = "${IAP_SUPPORT_EMAIL}"
+emqx_broker_type  = "${EMQX_BROKER_TYPE}"

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${admin_service_name}
+  namespace: ${deployment_namespace}
+spec:
+  ports:
+  - port: ${admin_service_port}
+    protocol: TCP
+    targetPort: ${admin_service_port}
+  selector:
+    apps.emqx.io/instance: "emqx-ee"
+  type: ClusterIP

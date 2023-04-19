@@ -1,0 +1,49 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+resource "local_file" "emqx_manifest" {
+  filename = "emqx-oss-manifest.yaml"
+  content = templatefile("../modules/emqx-oss/emqx-manifest.tftpl", {
+    emqx_api_version        = var.emqx_api_version
+    deployment_name         = var.deployment_name
+    deployment_namespace    = var.deployment_namespace
+    emqx_version            = var.emqx_version
+    iap_backend_config_name = var.iap_backend_config_name
+    mqtt_service_port       = var.mqtt_service_port
+    mqtt_tcp_neg_id         = var.mqtt_tcp_neg_id
+  })
+}
+
+module "emqx" {
+  source                  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
+  version                 = "3.1.2"
+  project_id              = var.project_id
+  cluster_name            = var.cluster_name
+  cluster_location        = var.cluster_location
+  kubectl_create_command  = "kubectl apply -f ${local_file.emqx_manifest.filename}"
+  kubectl_destroy_command = "kubectl delete -f ${local_file.emqx_manifest.filename}"
+  module_depends_on       = var.module_depends_on
+}
+
+data "kubernetes_resource" "tcp_neg" {
+  api_version = "networking.gke.io/v1beta1"
+  kind        = "ServiceNetworkEndpointGroup"
+  metadata {
+    name      = var.mqtt_tcp_neg_id
+    namespace = var.deployment_namespace
+  }
+  depends_on = [
+    module.emqx.wait
+  ]
+}

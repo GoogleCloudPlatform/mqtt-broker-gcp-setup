@@ -1,0 +1,13 @@
+{
+  "threshold": 5,
+  "reporters": [
+    "consoleFull"
+  ],
+  "ignore": [
+    "**/.terraform/**",
+    "**/.venv*/**",
+    "**/bin/**",
+    "**/build/**"
+  ],
+  "absolute": true
+}

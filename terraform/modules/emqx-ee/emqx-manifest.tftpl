@@ -1,0 +1,13 @@
+apiVersion: ${emqx_api_version}
+kind: EmqxEnterprise
+metadata:
+  name: ${deployment_name}
+  namespace: ${deployment_namespace}
+spec:
+  emqxTemplate:
+    image: ${emqx_version}
+    serviceTemplate:
+      metadata:
+        annotations:
+          cloud.google.com/backend-config: '{"default": "${iap_backend_config_name}"}'
+          cloud.google.com/neg: '{"exposed_ports": {"${mqtt_service_port}":{"name": "${mqtt_tcp_neg_id}"}}}'
