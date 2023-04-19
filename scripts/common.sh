@@ -34,6 +34,7 @@ check_exec_dependency() {
 check_environment_variable() {
   _VARIABLE_NAME=$1
   _ERROR_MESSAGE=$2
+  # shellcheck disable=SC3053
   _VARIABLE_VALUE="${!_VARIABLE_NAME:-}"
   if [ -z "${_VARIABLE_VALUE}" ]; then
     echo "[ERROR]: ${_VARIABLE_NAME} environment variable that points to ${_ERROR_MESSAGE} is not defined. Terminating..."
@@ -47,6 +48,7 @@ check_environment_variable() {
 set_environment_variable_if_not_set() {
   _VARIABLE_NAME=$1
   _VALUE_TO_SET=$2
+  # shellcheck disable=SC3053
   _VARIABLE_VALUE="${!_VARIABLE_NAME:-}"
   if [ -z "${_VARIABLE_VALUE}" ]; then
     export "${_VARIABLE_NAME}"="${_VALUE_TO_SET}"

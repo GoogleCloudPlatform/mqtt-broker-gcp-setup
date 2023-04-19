@@ -60,6 +60,7 @@ gcloud projects add-iam-policy-binding "${TF_STATE_PROJECT}" \
 echo "Enable the Cloud Resource Manager API with"
 gcloud services enable cloudresourcemanager.googleapis.com
 
+# shellcheck disable=SC2153
 echo "Creating a new Google Cloud Storage bucket to store the Terraform state in ${TF_STATE_PROJECT} project, bucket: ${TF_STATE_BUCKET}"
 if gsutil ls -b gs://"${TF_STATE_BUCKET}" >/dev/null 2>&1; then
     echo "The ${TF_STATE_BUCKET} Google Cloud Storage bucket already exists."
