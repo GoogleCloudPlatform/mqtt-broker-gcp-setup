@@ -108,7 +108,7 @@ module "iap_bastion" {
 
 module "cloud_router" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "4.0.0"
+  version = "5.0.1"
 
   name    = "master-authorized-network-router"
   network = module.gcp_network.network_name
