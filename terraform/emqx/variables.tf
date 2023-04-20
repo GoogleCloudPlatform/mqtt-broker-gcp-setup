@@ -22,6 +22,11 @@ variable "region" {
   description = "The Google Cloud region"
 }
 
+variable "tf_state_bucket" {
+  type        = string
+  description = "GCS bucket where terraform states are stored"
+}
+
 variable "gke_cluster_name" {
   type        = string
   description = "The name of the GKE cluster to deploy the EMQX broker on"

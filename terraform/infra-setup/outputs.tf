@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "tf_state_bucket" {
+  description = "GCS bucket where terraform states are stored"
+  value       = google_storage_bucket.tf_state_bucket.name
+}
+
 output "bastion_hostname" {
   description = "Hostname of the bastion host."
   value       = module.iap_bastion.hostname

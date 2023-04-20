@@ -17,6 +17,15 @@ provider "google" {
   region  = var.region
 }
 
+resource "local_file" "tf_backend_config" {
+  file_permission = "0644"
+  filename        = "backend.tf"
+  content = templatefile("../templates/backend.tftpl", {
+    bucket = var.tf_state_bucket
+    prefix = "broker/terraform/state"
+  })
+}
+
 data "google_client_config" "provider" {}
 
 data "google_container_cluster" "my_cluster" {

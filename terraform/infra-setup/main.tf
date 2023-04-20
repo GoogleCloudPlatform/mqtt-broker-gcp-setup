@@ -32,6 +32,50 @@ locals {
   gke_cluster_network_tag_file        = "cluster_node_network_tag.txt"
 }
 
+module "project_services" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "14.2.0"
+
+  disable_dependent_services  = true
+  disable_services_on_destroy = false
+
+  project_id = var.project_id
+
+  activate_apis = [
+    "compute.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "autoscaling.googleapis.com",
+    "iap.googleapis.com",
+    "beyondcorp.googleapis.com",
+    "container.googleapis.com",
+    "deploymentmanager.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "storage.googleapis.com"
+  ]
+}
+
+resource "google_storage_bucket" "tf_state_bucket" {
+  name                        = "tf-state-bucket-${var.project_id}"
+  location                    = var.region
+  public_access_prevention    = "enforced"
+  uniform_bucket_level_access = true
+  versioning {
+    enabled = true
+  }
+}
+
+resource "local_file" "tf_backend_config" {
+  file_permission = "0644"
+  filename        = "backend.tf"
+  content = templatefile("../templates/backend.tftpl", {
+    bucket = google_storage_bucket.tf_state_bucket.name
+    prefix = "infra/terraform/state"
+  })
+}
+
 module "gcp_network" {
   source  = "terraform-google-modules/network/google"
   version = "7.0.0"
@@ -102,7 +146,7 @@ module "iap_bastion" {
     "roles/compute.networkAdmin",
     "roles/container.serviceAgent",
     "roles/iam.securityAdmin",
-    google_project_iam_custom_role.iap_admin_role.id
+    "projects/${var.project_id}/roles/${google_project_iam_custom_role.iap_admin_role.role_id}"
   ]
 }
 

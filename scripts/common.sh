@@ -45,45 +45,14 @@ check_environment_variable() {
   unset _VARIABLE_VALUE
 }
 
-set_environment_variable_if_not_set() {
-  _VARIABLE_NAME=$1
-  _VALUE_TO_SET=$2
-  # shellcheck disable=SC3053
-  _VARIABLE_VALUE="${!_VARIABLE_NAME:-}"
-  if [ -z "${_VARIABLE_VALUE}" ]; then
-    export "${_VARIABLE_NAME}"="${_VALUE_TO_SET}"
-  fi
-  unset _VARIABLE_NAME
-  unset _VALUE_TO_SET
-  unset _VARIABLE_VALUE
-}
-
 run_terraform() {
   _TERRAFORM_RUN_DIR=$1
   shift
   terraform -chdir="${_TERRAFORM_RUN_DIR}" version
-  terraform -chdir="${_TERRAFORM_RUN_DIR}" init -input=false -backend-config=gcs-backend.conf
+  terraform -chdir="${_TERRAFORM_RUN_DIR}" init -input=false
   terraform -chdir="${_TERRAFORM_RUN_DIR}" validate
   terraform -chdir="${_TERRAFORM_RUN_DIR}" apply -input=false -auto-approve "$@"
   unset _TERRAFORM_RUN_DIR
-}
-
-create_terraform_backend_config_file() {
-  _TERRAFORM_RUN_DIR=$1
-  _TF_STATE_BUCKET=$2
-  _TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH="${_TERRAFORM_RUN_DIR}/gcs-backend.conf"
-  echo "Generating the Terraform backend configuration file: ${_TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH}"
-  if [ -f "${_TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH}" ]; then
-    echo "The ${_TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH} file already exists."
-  else
-    tee "${_TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH}" <<EOF
-bucket = "${_TF_STATE_BUCKET}"
-EOF
-  fi
-
-  unset _TERRAFORM_RUN_DIR
-  unset _TF_STATE_BUCKET
-  unset _TERRAFORM_BACKEND_CONFIGURATION_FILE_PATH
 }
 
 create_terraform_variables_file() {
