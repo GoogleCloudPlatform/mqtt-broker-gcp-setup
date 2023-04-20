@@ -36,7 +36,9 @@ ROOT_DIR=$(pwd)
 INFRA_DIR="${ROOT_DIR}/terraform/infra-setup"
 
 # Get variable value from infra-setup terraform output
-export TF_STATE_BUCKET="$(terraform -chdir="${INFRA_DIR}" output -raw tf_state_bucket)"
+TF_STATE_BUCKET="$(terraform -chdir="${INFRA_DIR}" output -raw tf_state_bucket)"
+export TF_STATE_BUCKET
+
 _BASTION_HOST_NAME="$(terraform -chdir="${INFRA_DIR}" output -raw bastion_hostname)"
 _GKE_CLUSTER_NAME="$(terraform -chdir="${INFRA_DIR}" output -raw gke_cluster_name)"
 
