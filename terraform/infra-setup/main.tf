@@ -18,6 +18,7 @@ provider "google" {
 }
 
 locals {
+  tf_state_bucket_name                = "tf-state-bucket"
   deployment_prefix                   = "emqx"
   network_name                        = "${local.deployment_prefix}-network"
   subnet_name                         = "${local.deployment_prefix}-subnet"
@@ -30,6 +31,59 @@ locals {
   ip_range_services                   = "${local.deployment_prefix}-services-ip-range"
   subnet_names                        = [for subnet_self_link in module.gcp_network.subnets_self_links : split("/", subnet_self_link)[length(split("/", subnet_self_link)) - 1]]
   gke_cluster_network_tag_file        = "cluster_node_network_tag.txt"
+}
+
+module "project_services" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "14.2.0"
+
+  disable_dependent_services  = true
+  disable_services_on_destroy = false
+
+  project_id = var.project_id
+
+  activate_apis = [
+    "compute.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "autoscaling.googleapis.com",
+    "iap.googleapis.com",
+    "beyondcorp.googleapis.com",
+    "container.googleapis.com",
+    "deploymentmanager.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "storage.googleapis.com"
+  ]
+}
+
+module "tf_state_bucket" {
+  source           = "terraform-google-modules/cloud-storage/google"
+  version          = "3.4.1"
+  location         = var.region
+  names            = [local.tf_state_bucket_name]
+  prefix           = var.project_id
+  project_id       = var.project_id
+  randomize_suffix = true
+  bucket_policy_only = {
+    (local.tf_state_bucket_name) = true
+  }
+  force_destroy = {
+    (local.tf_state_bucket_name) = true
+  }
+  versioning = {
+    (local.tf_state_bucket_name) = false
+  }
+}
+
+resource "local_file" "tf_backend_config" {
+  file_permission = "0644"
+  filename        = "backend.tf"
+  content = templatefile("../templates/backend.tftpl", {
+    bucket = module.tf_state_bucket.buckets[0].name
+    prefix = "infra/terraform/state"
+  })
 }
 
 module "gcp_network" {
@@ -102,7 +156,7 @@ module "iap_bastion" {
     "roles/compute.networkAdmin",
     "roles/container.serviceAgent",
     "roles/iam.securityAdmin",
-    google_project_iam_custom_role.iap_admin_role.id
+    "projects/${var.project_id}/roles/${google_project_iam_custom_role.iap_admin_role.role_id}"
   ]
 }
 

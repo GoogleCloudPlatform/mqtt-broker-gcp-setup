@@ -14,6 +14,7 @@
 
 terraform {
   backend "gcs" {
-    prefix = "broker/terraform/state"
+    bucket = "${bucket}"
+    prefix = "${prefix}"
   }
 }

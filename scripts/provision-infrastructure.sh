@@ -23,3 +23,11 @@ set -o nounset
 check_exec_dependency "terraform"
 
 run_terraform "terraform/infra-setup"
+
+TERRAFORM_BACKEND_CONFIG_FILE="terraform/infra-setup/backend.tf"
+if [ -f "${TERRAFORM_BACKEND_CONFIG_FILE}" ]; then
+  echo "Re-run terraform to migrate the local state to the remote backend."
+  run_terraform "terraform/infra-setup"
+else
+  echo "${TERRAFORM_BACKEND_CONFIG_FILE} was not generated."
+fi

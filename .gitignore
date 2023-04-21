@@ -18,18 +18,12 @@
 # Ignore local Terraform state
 *.tfstate*
 
-# Ignore the Terraform state directory
-*/**/.terraform
-
 # Ignore the user-provided variables file
 **/terraform.tfvars
 
 # Don't store the Google Cloud Storage Terraform backend configuration
 # because it's automatically generated
-gcs-backend.conf
-
-# Ignore the test script file
-**/test.sh
+**/backend.tf
 
 # Ignore network tag output file
 **/cluster_node_network_tag.txt

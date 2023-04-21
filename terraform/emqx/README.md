@@ -32,13 +32,12 @@ on Google Kubernetes Engine(GKE).
     ```
     **Note:** the `IAP_SUPPORT_EMAIL` is the email address you want to display as a public contact on OAuth consent screen. For detailed description from the [product doc](https://cloud.google.com/iap/docs/enabling-kubernetes-howto#oauth-configure).
 
-1. Run the following script to generate Terraform backend configurations. The script also creates a Google Cloud Storage bucket where Terraform stores its state data file. This bucket is not managed by Terraform. To run the script you use an account to authenticate against Google Cloud  which have following permissions in your Google Cloud project:
+1. Run the following script to create terraform service account and generate the terraform variable files based on the environment variables created in previous step. To run the script you use an account to authenticate against Google Cloud  which have following permissions in your Google Cloud project:
     * `roles/iam.serviceAccountCreator` for creating service account used by terraform.
-    * `roles/storage.admin` for creating terraform backend-config storage bucket.
 
     ```bash
     cd $HOME/mqtt-broker-gcp-setup/
-    scripts/generate-tf-backend.sh
+    scripts/pre-tf-setup.sh
     ```
 
 ## Provision Google Kubernetes Engine cluster
