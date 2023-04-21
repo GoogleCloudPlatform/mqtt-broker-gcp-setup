@@ -18,6 +18,7 @@ provider "google" {
 }
 
 locals {
+  tf_state_bucket_name                = "tf-state-bucket"
   deployment_prefix                   = "emqx"
   network_name                        = "${local.deployment_prefix}-network"
   subnet_name                         = "${local.deployment_prefix}-subnet"
@@ -57,13 +58,22 @@ module "project_services" {
   ]
 }
 
-resource "google_storage_bucket" "tf_state_bucket" {
-  name                        = "tf-state-bucket-${var.project_id}"
-  location                    = var.region
-  public_access_prevention    = "enforced"
-  uniform_bucket_level_access = true
-  versioning {
-    enabled = true
+module "tf_state_bucket" {
+  source  = "terraform-google-modules/cloud-storage/google"
+  version = "3.4.1"
+  location         = var.region
+  names            = [local.tf_state_bucket_name]
+  prefix           = var.project_id
+  project_id       = var.project_id
+  randomize_suffix = true
+  bucket_policy_only = {
+    (local.tf_state_bucket_name) = true
+  }
+  force_destroy = {
+    (local.tf_state_bucket_name) = true
+  }
+  versioning = {
+    (local.tf_state_bucket_name) = false
   }
 }
 
@@ -71,7 +81,7 @@ resource "local_file" "tf_backend_config" {
   file_permission = "0644"
   filename        = "backend.tf"
   content = templatefile("../templates/backend.tftpl", {
-    bucket = google_storage_bucket.tf_state_bucket.name
+    bucket = module.tf_state_bucket.buckets[0].name
     prefix = "infra/terraform/state"
   })
 }

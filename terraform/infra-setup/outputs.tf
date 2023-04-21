@@ -14,7 +14,7 @@
 
 output "tf_state_bucket" {
   description = "GCS bucket where terraform states are stored"
-  value       = google_storage_bucket.tf_state_bucket.name
+  value       = module.tf_state_bucket.buckets[0].name
 }
 
 output "bastion_hostname" {

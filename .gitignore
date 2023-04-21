@@ -23,7 +23,7 @@
 
 # Don't store the Google Cloud Storage Terraform backend configuration
 # because it's automatically generated
-**/backend.conf
+**/backend.tf
 
 # Ignore network tag output file
 **/cluster_node_network_tag.txt
