@@ -52,6 +52,7 @@ run_terraform() {
   terraform -chdir="${_TERRAFORM_RUN_DIR}" init -input=false
   terraform -chdir="${_TERRAFORM_RUN_DIR}" validate
   terraform -chdir="${_TERRAFORM_RUN_DIR}" apply -input=false -auto-approve "$@"
+  terraform -chdir="${_TERRAFORM_RUN_DIR}" init -migrate-state
   unset _TERRAFORM_RUN_DIR
 }
 
