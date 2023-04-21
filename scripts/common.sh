@@ -63,7 +63,7 @@ create_terraform_variables_file() {
   if [ -f "${_TERRAFORM_VARIABLE_FILE_PATH}" ]; then
     echo "The ${_TERRAFORM_VARIABLE_FILE_PATH} file already exists."
   else
-    envsubst < "${_TERRAFORM_RUN_DIR}/terraform.tfvars.template" > "${_TERRAFORM_VARIABLE_FILE_PATH}"
+    envsubst <"${_TERRAFORM_RUN_DIR}/terraform.tfvars.template" >"${_TERRAFORM_VARIABLE_FILE_PATH}"
   fi
 
   unset _TERRAFORM_RUN_DIR

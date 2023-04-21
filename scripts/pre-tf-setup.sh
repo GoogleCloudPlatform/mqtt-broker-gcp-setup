@@ -37,21 +37,21 @@ gcloud config set project "${PROJECT_ID}"
 echo "Creating the service account for Terraform"
 TF_SERVICE_ACCOUNT_NAME=tf-service-account
 if gcloud iam service-accounts describe "${TF_SERVICE_ACCOUNT_NAME}"@"${PROJECT_ID}".iam.gserviceaccount.com >/dev/null 2>&1; then
-    echo "The ${TF_SERVICE_ACCOUNT_NAME} service account already exists."
+  echo "The ${TF_SERVICE_ACCOUNT_NAME} service account already exists."
 else
-    gcloud iam service-accounts create "${TF_SERVICE_ACCOUNT_NAME}" \
-        --display-name "Terraform admin account"
+  gcloud iam service-accounts create "${TF_SERVICE_ACCOUNT_NAME}" \
+    --display-name "Terraform admin account"
 fi
 
 echo "Granting the service account permission to view the Admin Project"
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-    --member serviceAccount:"${TF_SERVICE_ACCOUNT_NAME}"@"${PROJECT_ID}".iam.gserviceaccount.com \
-    --role roles/viewer
+  --member serviceAccount:"${TF_SERVICE_ACCOUNT_NAME}"@"${PROJECT_ID}".iam.gserviceaccount.com \
+  --role roles/viewer
 
 echo "Granting the service account permission to manage Cloud Storage"
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-    --member serviceAccount:"${TF_SERVICE_ACCOUNT_NAME}"@"${PROJECT_ID}".iam.gserviceaccount.com \
-    --role roles/storage.admin
+  --member serviceAccount:"${TF_SERVICE_ACCOUNT_NAME}"@"${PROJECT_ID}".iam.gserviceaccount.com \
+  --role roles/storage.admin
 
 echo "Enable the Cloud Resource Manager API with"
 gcloud services enable cloudresourcemanager.googleapis.com

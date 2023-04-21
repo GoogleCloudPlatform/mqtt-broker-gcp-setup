@@ -47,7 +47,7 @@ create_terraform_variables_file "${_BROKER_TERRAFORM_DIR}"
 
 TERRAFORM_VARIABLE_FILE_PATH="${_BROKER_TERRAFORM_DIR}/terraform.tfvars"
 if ! grep -q "gke_cluster_name" "${TERRAFORM_VARIABLE_FILE_PATH}"; then
-    echo "gke_cluster_name  = \"${_GKE_CLUSTER_NAME}\"" >> "${TERRAFORM_VARIABLE_FILE_PATH}"
+  echo "gke_cluster_name  = \"${_GKE_CLUSTER_NAME}\"" >> "${TERRAFORM_VARIABLE_FILE_PATH}"
 fi
 
 _BASTION_ZONE="${REGION}-b"
@@ -58,7 +58,6 @@ gcloud compute scp \
   --recurse \
   --zone "${_BASTION_ZONE}" \
   "${_BROKER_TERRAFORM_DIR}/" "${_BASTION_HOST_NAME}":~/
-
 
 echo "Copying terraform modules to the bastion host"
 _TERRAFORM_MODULES_DIR="${ROOT_DIR}/terraform/modules"
