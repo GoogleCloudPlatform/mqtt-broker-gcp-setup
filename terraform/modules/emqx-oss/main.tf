@@ -36,6 +36,29 @@ module "emqx" {
   module_depends_on       = var.module_depends_on
 }
 
+resource "null_resource" "wait_for_neg_creation" {
+  provisioner "local-exec" {
+    command = <<-EOT
+    COUNTER=0
+    MAX_TRIES=50
+    while ! kubectl describe svcneg ${var.mqtt_tcp_neg_id} | grep -i "network endpoint groups" && [ $COUNTER -lt $MAX_TRIES ]
+    do
+      sleep 30
+      COUNTER=$((COUNTER + 1))
+    done
+    if [ $COUNTER -eq $MAX_TRIES ]; then
+      echo "Network Endpoint Group for the MQTT service was not created, terraform can not continue!"
+      exit 1
+    fi
+    sleep 20
+    EOT
+  }
+
+  depends_on = [
+    module.emqx.wait
+  ]
+}
+
 data "kubernetes_resource" "tcp_neg" {
   api_version = "networking.gke.io/v1beta1"
   kind        = "ServiceNetworkEndpointGroup"
@@ -44,6 +67,6 @@ data "kubernetes_resource" "tcp_neg" {
     namespace = var.deployment_namespace
   }
   depends_on = [
-    module.emqx.wait
+    null_resource.wait_for_neg_creation
   ]
 }

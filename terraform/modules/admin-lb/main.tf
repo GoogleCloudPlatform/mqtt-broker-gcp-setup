@@ -30,6 +30,28 @@ resource "kubernetes_manifest" "admin-server-cert" {
   }
 }
 
+resource "null_resource" "wait_for_server_cert_creation" {
+  provisioner "local-exec" {
+    command = <<-EOT
+    COUNTER=0
+    MAX_TRIES=50
+    while ! kubectl describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace} | grep -i "certificate name" && [ $COUNTER -lt $MAX_TRIES ]
+    do
+      sleep 15
+      COUNTER=$((COUNTER + 1))
+    done
+    if [ $COUNTER -eq $MAX_TRIES ]; then
+      echo "The managed server certificate was not created, terraform can not continue!"
+      exit 1
+    fi
+    EOT
+  }
+
+  depends_on = [
+    kubernetes_manifest.admin-server-cert
+  ]
+}
+
 data "kubernetes_resource" "managed_certificate" {
   api_version = kubernetes_manifest.admin-server-cert.manifest.apiVersion
   kind        = kubernetes_manifest.admin-server-cert.manifest.kind
@@ -37,6 +59,8 @@ data "kubernetes_resource" "managed_certificate" {
     name      = kubernetes_manifest.admin-server-cert.manifest.metadata.name
     namespace = kubernetes_manifest.admin-server-cert.manifest.metadata.namespace
   }
+
+  depends_on = [null_resource.wait_for_server_cert_creation]
 }
 
 resource "kubernetes_ingress_v1" "admin-ingress" {
