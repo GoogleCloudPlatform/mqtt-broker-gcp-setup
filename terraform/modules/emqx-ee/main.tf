@@ -41,12 +41,7 @@ resource "null_resource" "wait_for_neg_creation" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<-EOT
     . ../common.sh
-    wait_for_state kubectl \
-    "describe svcneg ${var.mqtt_tcp_neg_id}" \
-    'network endpoint groups' \
-    'Network Endpoint Group for the MQTT service was not created, please ensure that the network endpoint group with ID ${var.mqtt_tcp_neg_id} is present before proceeding with the deployment. You can check this in the Cloud Console.' \
-    30 \
-    50
+    wait_for_state kubectl "describe svcneg ${var.mqtt_tcp_neg_id}" 'network endpoint groups' 'Network Endpoint Group for the MQTT service was not created, please ensure that the network endpoint group with ID ${var.mqtt_tcp_neg_id} is present before proceeding with the deployment. You can check this in the Cloud Console.' 30 50
     EOT
   }
 

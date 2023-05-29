@@ -78,12 +78,12 @@ wait_for_state() {
   _MAX_TRIES=${6:-50}
   _COUNTER=0
 
-  while ! "${_STATE_CHECK_CMD}" ${_STATE_CHECK_CMD_ARGS} | grep -i "${_VALIDATION_SEARCH_TERM}" && [ $_COUNTER -lt $_MAX_TRIES ]
-  do
-    sleep ${_WAIT_PER_LOOP_SEC}
+  # shellcheck disable=SC2086
+  while ! "${_STATE_CHECK_CMD}" ${_STATE_CHECK_CMD_ARGS} | grep -i "${_VALIDATION_SEARCH_TERM}" && [ $_COUNTER -lt $_MAX_TRIES ]; do
+    sleep "${_WAIT_PER_LOOP_SEC}"
     _COUNTER=$((_COUNTER + 1))
   done
-  if [ $_COUNTER -eq $_MAX_TRIES ]; then
+  if [ $_COUNTER -eq "${_MAX_TRIES}" ]; then
     echo "${_ERROR_MESSAGE}"
     exit 1
   fi

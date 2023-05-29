@@ -35,12 +35,7 @@ resource "null_resource" "wait_for_server_cert_creation" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<-EOT
     . ../common.sh
-    wait_for_state kubectl \
-    "describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace}" \
-    'certificate name' \
-    'The managed server certificate was not created, please ensure that the managed certificate with ID ${var.admin_server_cert_id} is present on your GKE cluster before proceeding with the deployment.' \
-    15 \
-    50
+    wait_for_state kubectl "describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace}" 'certificate name' 'The managed server certificate was not created, please ensure that the managed certificate with ID ${var.admin_server_cert_id} is present on your GKE cluster before proceeding with the deployment.' 15 50
     EOT
   }
 
