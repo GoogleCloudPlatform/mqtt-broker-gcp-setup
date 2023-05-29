@@ -118,6 +118,8 @@ module "gcp_network" {
       },
     ]
   }
+
+  depends_on = [local_file.tf_backend_config]
 }
 
 resource "google_project_iam_custom_role" "iap_admin_role" {
@@ -134,6 +136,8 @@ resource "google_project_iam_custom_role" "iap_admin_role" {
     "clientauthconfig.clients.delete",
     "clientauthconfig.clients.update"
   ]
+
+  depends_on = [local_file.tf_backend_config]
 }
 
 module "iap_bastion" {

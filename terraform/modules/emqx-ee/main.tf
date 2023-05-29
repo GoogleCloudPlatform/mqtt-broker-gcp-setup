@@ -38,19 +38,15 @@ module "emqx" {
 
 resource "null_resource" "wait_for_neg_creation" {
   provisioner "local-exec" {
-    command = <<-EOT
-    COUNTER=0
-    MAX_TRIES=50
-    while ! kubectl describe svcneg ${var.mqtt_tcp_neg_id} | grep -i "network endpoint groups" && [ $COUNTER -lt $MAX_TRIES ]
-    do
-      sleep 30
-      COUNTER=$((COUNTER + 1))
-    done
-    if [ $COUNTER -eq $MAX_TRIES ]; then
-      echo "Network Endpoint Group for the MQTT service was not created, terraform can not continue!"
-      exit 1
-    fi
-    sleep 20
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<-EOT
+    . ../common.sh
+    wait_for_state kubectl \
+    "describe svcneg ${var.mqtt_tcp_neg_id}" \
+    'network endpoint groups' \
+    'Network Endpoint Group for the MQTT service was not created, please ensure that the network endpoint group with ID ${var.mqtt_tcp_neg_id} is present before proceeding with the deployment. You can check this in the Cloud Console.' \
+    30 \
+    50
     EOT
   }
 

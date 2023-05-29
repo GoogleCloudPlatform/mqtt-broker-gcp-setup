@@ -32,18 +32,15 @@ resource "kubernetes_manifest" "admin-server-cert" {
 
 resource "null_resource" "wait_for_server_cert_creation" {
   provisioner "local-exec" {
-    command = <<-EOT
-    COUNTER=0
-    MAX_TRIES=50
-    while ! kubectl describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace} | grep -i "certificate name" && [ $COUNTER -lt $MAX_TRIES ]
-    do
-      sleep 15
-      COUNTER=$((COUNTER + 1))
-    done
-    if [ $COUNTER -eq $MAX_TRIES ]; then
-      echo "The managed server certificate was not created, terraform can not continue!"
-      exit 1
-    fi
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<-EOT
+    . ../common.sh
+    wait_for_state kubectl \
+    "describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace}" \
+    'certificate name' \
+    'The managed server certificate was not created, please ensure that the managed certificate with ID ${var.admin_server_cert_id} is present on your GKE cluster before proceeding with the deployment.' \
+    15 \
+    50
     EOT
   }
 
