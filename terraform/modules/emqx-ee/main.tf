@@ -36,6 +36,20 @@ module "emqx" {
   module_depends_on       = var.module_depends_on
 }
 
+resource "null_resource" "wait_for_neg_creation" {
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<-EOT
+    . ../common.sh
+    wait_for_state kubectl "describe svcneg ${var.mqtt_tcp_neg_id}" 'network endpoint groups' 'Network Endpoint Group for the MQTT service was not created, please ensure that the network endpoint group with ID ${var.mqtt_tcp_neg_id} is present before proceeding with the deployment. You can check this in the Cloud Console.' 30 50
+    EOT
+  }
+
+  depends_on = [
+    module.emqx.wait
+  ]
+}
+
 resource "local_file" "admin_service_manifest" {
   filename = "admin-service-manifest.yaml"
   content = templatefile("../modules/emqx-ee/admin-service-manifest.tftpl", {
@@ -63,6 +77,6 @@ data "kubernetes_resource" "tcp_neg" {
     namespace = var.deployment_namespace
   }
   depends_on = [
-    module.emqx.wait
+    null_resource.wait_for_neg_creation
   ]
 }

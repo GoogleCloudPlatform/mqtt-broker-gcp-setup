@@ -49,7 +49,7 @@ run_terraform() {
   _TERRAFORM_RUN_DIR=$1
   shift
   terraform -chdir="${_TERRAFORM_RUN_DIR}" version
-  terraform -chdir="${_TERRAFORM_RUN_DIR}" init -input=false -migrate-state
+  terraform -chdir="${_TERRAFORM_RUN_DIR}" init -migrate-state
   terraform -chdir="${_TERRAFORM_RUN_DIR}" validate
   terraform -chdir="${_TERRAFORM_RUN_DIR}" apply -input=false -auto-approve "$@"
   unset _TERRAFORM_RUN_DIR
@@ -67,4 +67,32 @@ create_terraform_variables_file() {
 
   unset _TERRAFORM_RUN_DIR
   unset _TERRAFORM_VARIABLE_FILE_PATH
+}
+
+wait_for_state() {
+  _STATE_CHECK_CMD="$1"
+  _STATE_CHECK_CMD_ARGS="$2"
+  _VALIDATION_SEARCH_TERM="$3"
+  _ERROR_MESSAGE="$4"
+  _WAIT_PER_LOOP_SEC=${5:-10}
+  _MAX_TRIES=${6:-50}
+  _COUNTER=0
+
+  # shellcheck disable=SC2086
+  while ! "${_STATE_CHECK_CMD}" ${_STATE_CHECK_CMD_ARGS} | grep -i "${_VALIDATION_SEARCH_TERM}" && [ $_COUNTER -lt $_MAX_TRIES ]; do
+    sleep "${_WAIT_PER_LOOP_SEC}"
+    _COUNTER=$((_COUNTER + 1))
+  done
+  if [ $_COUNTER -eq "${_MAX_TRIES}" ]; then
+    echo "${_ERROR_MESSAGE}"
+    exit 1
+  fi
+
+  unset _STATE_CHECK_CMD
+  unset _STATE_CHECK_CMD_ARGS
+  unset _VALIDATION_SEARCH_TERM
+  unset _ERROR_MESSAGE
+  unset _WAIT_PER_LOOP_SEC
+  unset _MAX_TRIES
+  unset _COUNTER
 }

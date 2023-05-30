@@ -30,6 +30,20 @@ resource "kubernetes_manifest" "admin-server-cert" {
   }
 }
 
+resource "null_resource" "wait_for_server_cert_creation" {
+  provisioner "local-exec" {
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<-EOT
+    . ../common.sh
+    wait_for_state kubectl "describe managedcertificate ${var.admin_server_cert_id} --namespace=${var.deployment_namespace}" 'certificate name' 'The managed server certificate was not created, please ensure that the managed certificate with ID ${var.admin_server_cert_id} is present on your GKE cluster before proceeding with the deployment.' 15 50
+    EOT
+  }
+
+  depends_on = [
+    kubernetes_manifest.admin-server-cert
+  ]
+}
+
 data "kubernetes_resource" "managed_certificate" {
   api_version = kubernetes_manifest.admin-server-cert.manifest.apiVersion
   kind        = kubernetes_manifest.admin-server-cert.manifest.kind
@@ -37,6 +51,8 @@ data "kubernetes_resource" "managed_certificate" {
     name      = kubernetes_manifest.admin-server-cert.manifest.metadata.name
     namespace = kubernetes_manifest.admin-server-cert.manifest.metadata.namespace
   }
+
+  depends_on = [null_resource.wait_for_server_cert_creation]
 }
 
 resource "kubernetes_ingress_v1" "admin-ingress" {
