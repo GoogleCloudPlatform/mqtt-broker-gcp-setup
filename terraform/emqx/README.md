@@ -13,6 +13,88 @@ on Google Kubernetes Engine(GKE).
 * You have the necessary access rights to reconfigure your domain's DNS records.
 * You have a Google Cloud project with billing enabled.
 
+## IAM Permissions
+To deploy the broker through Terraform, you will need the following Google Cloud IAM permissions:
+
+* compute.disks.create
+* compute.firewalls.create
+* compute.firewalls.delete
+* compute.firewalls.get
+* compute.instanceGroupManagers.get
+* compute.instanceTemplates.create
+* compute.instanceTemplates.delete
+* compute.instanceTemplates.get
+* compute.instanceTemplates.useReadOnly
+* compute.instances.create
+* compute.instances.delete
+* compute.instances.get
+* compute.instances.setMetadata
+* compute.instances.setServiceAccount
+* compute.networks.create
+* compute.networks.get
+* compute.networks.updatePolicy
+* compute.routers.create
+* compute.routers.delete
+* compute.routers.get
+* compute.routers.update
+* compute.subnetworks.create
+* compute.subnetworks.delete
+* compute.subnetworks.get
+* compute.subnetworks.setPrivateIpGoogleAccess
+* compute.subnetworks.use
+* compute.zones.get
+* compute.zones.list
+* container.clusters.create
+* container.clusters.delete
+* container.clusters.get
+* container.operations.get
+* iam.roles.create
+* iam.roles.delete
+* iam.roles.get
+* iam.roles.list
+* iam.roles.undelete
+* iam.roles.update
+* iam.serviceAccounts.actAs
+* iam.serviceAccounts.create
+* iam.serviceAccounts.get
+* iam.serviceAccounts.getIamPolicy
+* iam.serviceAccounts.list
+* iam.serviceAccounts.setIamPolicy
+* iap.tunnel.getIamPolicy
+* iap.tunnel.setIamPolicy
+* iap.tunnelInstances.getIamPolicy
+* iap.tunnelInstances.setIamPolicy
+* monitoring.alertPolicies.create
+* monitoring.alertPolicies.delete
+* monitoring.alertPolicies.get
+* monitoring.alertPolicies.list
+* monitoring.alertPolicies.update
+* monitoring.timeSeries.list
+* resourcemanager.projects.get
+* resourcemanager.projects.getIamPolicy
+* resourcemanager.projects.setIamPolicy
+* serviceusage.operations.cancel
+* serviceusage.operations.delete
+* serviceusage.operations.get
+* serviceusage.operations.list
+* serviceusage.quotas.get
+* serviceusage.quotas.update
+* serviceusage.services.disable
+* serviceusage.services.enable
+* serviceusage.services.get
+* serviceusage.services.list
+* serviceusage.services.use
+* storage.buckets.create
+* storage.buckets.delete
+* storage.buckets.get
+* storage.buckets.list
+* storage.buckets.setIamPolicy
+* storage.buckets.update
+* storage.objects.create
+* storage.objects.delete
+* storage.objects.get
+* storage.objects.list
+
 ## Environment setup
 1. Clone the source code repository:
 
