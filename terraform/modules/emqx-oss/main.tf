@@ -27,7 +27,7 @@ resource "local_file" "emqx_manifest" {
 
 module "emqx" {
   source                  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
-  version                 = "3.1.2"
+  version                 = "3.2.1"
   project_id              = var.project_id
   cluster_name            = var.cluster_name
   cluster_location        = var.cluster_location
