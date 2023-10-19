@@ -60,7 +60,7 @@ module "project_services" {
 
 module "tf_state_bucket" {
   source           = "terraform-google-modules/cloud-storage/google"
-  version          = "3.4.1"
+  version          = "5.0.0"
   location         = var.region
   names            = [local.tf_state_bucket_name]
   prefix           = var.project_id
