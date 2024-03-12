@@ -27,7 +27,7 @@ resource "local_file" "emqx_manifest" {
 
 module "emqx" {
   source                  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
-  version                 = "3.1.2"
+  version                 = "3.4.0"
   project_id              = var.project_id
   cluster_name            = var.cluster_name
   cluster_location        = var.cluster_location
@@ -61,7 +61,7 @@ resource "local_file" "admin_service_manifest" {
 
 module "emqx_ee_admin_service" {
   source                  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
-  version                 = "3.1.2"
+  version                 = "3.4.0"
   project_id              = var.project_id
   cluster_name            = var.cluster_name
   cluster_location        = var.cluster_location
