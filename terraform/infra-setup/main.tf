@@ -88,7 +88,7 @@ resource "local_file" "tf_backend_config" {
 
 module "gcp_network" {
   source  = "terraform-google-modules/network/google"
-  version = "7.0.0"
+  version = "11.1.1"
 
   project_id   = var.project_id
   network_name = local.network_name
